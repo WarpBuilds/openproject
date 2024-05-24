@@ -138,7 +138,7 @@ RSpec.describe Queries::Projects::ProjectQueries::SetAttributesService, type: :m
         .to(be_all { |f| f.is_a?(Queries::Orders::Base) })
 
       expect(model_instance.orders.map { |o| [o.name, o.direction] })
-        .to eql [["id", :asc], ["name", :desc]]
+        .to eq([%i[id asc], %i[name desc]])
     end
   end
 
@@ -218,7 +218,7 @@ RSpec.describe Queries::Projects::ProjectQueries::SetAttributesService, type: :m
         .to(be_all { |f| f.is_a?(Queries::Orders::Base) })
 
       expect(model_instance.orders.map { |o| [o.name, o.direction] })
-        .to eql [["id", :asc], ["name", :desc]]
+        .to eq([%i[id asc], %i[name desc]])
     end
   end
 
