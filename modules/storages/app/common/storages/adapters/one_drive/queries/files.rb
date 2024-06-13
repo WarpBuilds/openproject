@@ -29,11 +29,15 @@
 #++
 
 module Storages
-  module Peripherals
-    module StorageInteraction
-      module OneDrive
-        class FilesQuery
+  module Adapters
+    module OneDrive
+      module Queries
+        class Files
           FIELDS = "?$select=id,name,size,webUrl,lastModifiedBy,createdBy,fileSystemInfo,file,folder,parentReference"
+          Auth = ::Storages::Peripherals::StorageInteraction::Authentication
+          Util = Peripherals::StorageInteraction::OneDrive::Util
+
+          using Peripherals::ServiceResultRefinements
 
           def self.call(storage:, auth_strategy:, folder:)
             new(storage).call(auth_strategy:, folder:)
@@ -45,7 +49,7 @@ module Storages
           end
 
           def call(auth_strategy:, folder:)
-            Authentication[auth_strategy].call(storage: @storage) do |http|
+            Auth[auth_strategy].call(storage: @storage) do |http|
               call = http.get(Util.join_uri_path(@uri, children_uri_path_for(folder) + FIELDS))
               response = handle_response(call, :value)
 
