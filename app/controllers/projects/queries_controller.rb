@@ -27,7 +27,7 @@
 # ++
 
 class Projects::QueriesController < ApplicationController
-  include Projects::QueryLoading
+  include Queries::Loading
 
   # No need for a more specific authorization check. That is carried out in the contracts.
   no_authorization_required! :show, :new, :create, :rename, :update, :publish, :unpublish, :destroy

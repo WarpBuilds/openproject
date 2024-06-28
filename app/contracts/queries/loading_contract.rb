@@ -26,8 +26,10 @@
 # See COPYRIGHT and LICENSE files for more details.
 # ++
 
-module Queries::Projects::ProjectQueries
-  class DeleteContract < ::DeleteContract
-    delete_permission -> { user == model.user }
+module Queries
+  class LoadingContract < ::ModelContract
+    attribute :filters
+    attribute :orders
+    attribute :selects
   end
 end

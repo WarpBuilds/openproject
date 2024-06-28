@@ -26,8 +26,24 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-module Queries::Projects::ProjectQueries
-  class PublishContract < BaseContract
-    attribute :public
+module ProjectQueries
+  class PublishService < BaseServices::Update
+    private
+
+    def after_validate(params, service_call)
+      model.public = params[:public]
+
+      service_call
+    end
+
+    def persist(service_call)
+      model.save
+
+      service_call
+    end
+
+    def default_contract_class
+      Queries::Projects::ProjectQueries::PublishContract
+    end
   end
 end

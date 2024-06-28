@@ -26,24 +26,23 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-module Queries::Projects::ProjectQueries
-  class PublishService < BaseServices::Update
-    private
+require "spec_helper"
+require_relative "shared_contract_examples"
 
-    def after_validate(params, service_call)
-      model.public = params[:public]
+RSpec.describe ProjectQueries::CreateContract do
+  it_behaves_like "project queries contract" do
+    let(:query) do
+      ProjectQuery.new(name: query_name).tap do |query|
+        query.extend(OpenProject::ChangedBySystem)
 
-      service_call
+        query.change_by_system do
+          query.user = query_user
+        end
+
+        query.select(*query_selects)
+      end
     end
 
-    def persist(service_call)
-      model.save
-
-      service_call
-    end
-
-    def default_contract_class
-      Queries::Projects::ProjectQueries::PublishContract
-    end
+    let(:contract) { described_class.new(query, current_user) }
   end
 end

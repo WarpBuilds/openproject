@@ -57,24 +57,24 @@ module Menus
 
     def main_static_filters
       static_filters [
-        ::Queries::Projects::Factory::STATIC_ACTIVE,
-        ::Queries::Projects::Factory::STATIC_MY,
-        ::Queries::Projects::Factory::STATIC_FAVORED,
-        current_user.admin? ? ::Queries::Projects::Factory::STATIC_ARCHIVED : nil
+        ProjectQueries::Static::ACTIVE,
+        ProjectQueries::Static::MY,
+        ProjectQueries::Static::FAVORED,
+        current_user.admin? ? ProjectQueries::Static::ARCHIVED : nil
       ].compact
     end
 
     def status_static_filters
       static_filters [
-        ::Queries::Projects::Factory::STATIC_ON_TRACK,
-        ::Queries::Projects::Factory::STATIC_OFF_TRACK,
-        ::Queries::Projects::Factory::STATIC_AT_RISK
+        ProjectQueries::Static::ON_TRACK,
+        ProjectQueries::Static::OFF_TRACK,
+        ProjectQueries::Static::AT_RISK
       ]
     end
 
     def static_filters(ids)
       ids.map do |id|
-        query_menu_item(::Queries::Projects::Factory.static_query(id), id:)
+        query_menu_item(::ProjectQueries::Static.query(id), id:)
       end
     end
 
@@ -103,7 +103,7 @@ module Menus
       when "projects"
         case params[:query_id]
         when nil
-          id.to_s == Queries::Projects::Factory::DEFAULT_STATIC
+          id.to_s == ProjectQueries::Static::DEFAULT
         when /\A\d+\z/
           id.to_s == params[:query_id]
         else

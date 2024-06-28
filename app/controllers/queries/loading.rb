@@ -25,7 +25,44 @@
 #
 # See COPYRIGHT and LICENSE files for more details.
 # ++
+module Queries
+  module Loading
+    private
 
-module Queries::Projects::ProjectQueries
-  class CreateContract < BaseContract; end
+    def load_query(duplicate:)
+      ::Queries::Factory.find(params[:query_id],
+                              query_class:,
+                              params: permitted_query_params,
+                              user: current_user,
+                              duplicate:)
+    end
+
+    def load_query_or_deny_access
+      @query = load_query(duplicate: false)
+
+      render_403 unless @query
+    end
+
+    def build_query_or_deny_access
+      @query = load_query(duplicate: true)
+
+      render_403 unless @query
+    end
+
+    def permitted_query_params
+      query_params = {}
+
+      if params[:query]
+        query_params.merge!(params.require(:query).permit(:name))
+      end
+
+      query_params.merge!(::Queries::ParamsParser.parse(params))
+
+      query_params.with_indifferent_access
+    end
+
+    def query_class
+      "#{self.class.name.chomp('Controller').singularize}Query".constantize
+    end
+  end
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # -- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) 2010-2024 the OpenProject GmbH
@@ -28,22 +26,17 @@
 # See COPYRIGHT and LICENSE files for more details.
 # ++
 
-require "spec_helper"
-require "contracts/shared/model_contract_shared_context"
+class ProjectQueries::CreateService < BaseServices::Create
+  def initialize(from: nil, **)
+    @from = from
+    super(**)
+  end
 
-RSpec.describe Queries::Projects::ProjectQueries::DeleteContract do
-  include_context "ModelContract shared context"
+  def instance(_params)
+    @from || super
+  end
 
-  let(:current_user) { build_stubbed(:user) }
-  let(:query_user) { current_user }
-  let(:query) { build_stubbed(:project_query, user: query_user) }
-  let(:contract) { described_class.new(query, current_user) }
-
-  it_behaves_like "contract is valid"
-
-  context "if the current user is not the query user" do
-    let(:query_user) { build_stubbed(:user) }
-
-    it_behaves_like "contract is invalid", base: :error_unauthorized
+  def instance_class
+    ProjectQuery
   end
 end
