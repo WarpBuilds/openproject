@@ -86,7 +86,7 @@ class User < Principal
            dependent: :destroy
 
   has_many :project_queries,
-           class_name: 'Queries::Projects::ProjectQuery',
+           class_name: "ProjectQuery",
            inverse_of: :user,
            dependent: :destroy
 

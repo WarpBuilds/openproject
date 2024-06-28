@@ -434,7 +434,7 @@ module Settings
       },
       enabled_projects_columns: {
         default: %w[favored name project_status public created_at latest_activity_at required_disk_space],
-        allowed: -> { Queries::Projects::ProjectQuery.new.available_selects.map { |s| s.attribute.to_s } }
+        allowed: -> { ProjectQuery.new.available_selects.map { |s| s.attribute.to_s } }
       },
       enabled_scm: {
         default: %w[subversion git]
