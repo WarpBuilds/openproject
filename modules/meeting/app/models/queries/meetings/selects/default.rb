@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
-#-- copyright
+# -- copyright
 # OpenProject is an open source project management software.
-# Copyright (C) 2012-2024 the OpenProject GmbH
+# Copyright (C) 2010-2024 the OpenProject GmbH
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3.
@@ -26,55 +24,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 # See COPYRIGHT and LICENSE files for more details.
-#++
+# ++
 
-##
-# Abstract view component. Subclass this for a concrete table row.
-class RowComponent < ApplicationComponent
-  attr_reader :table
+class Queries::Meetings::Selects::Default < Queries::Selects::Base
+  KEYS = %i[title type start_time duration location].freeze
 
-  def initialize(row:, table:, **)
-    super(row, **)
-    @table = table
+  def self.key
+    Regexp.new(KEYS.join("|"))
   end
 
-  delegate :columns, to: :table
-
-  def row
-    model
-  end
-
-  def column_value(column)
-    if column.respond_to?(:attribute)
-      send(column.attribute)
-    else
-      send(column)
-    end
-  end
-
-  def column_css_class(column)
-    column_css_classes[column]
-  end
-
-  def column_css_classes
-    @column_css_classes ||= columns.index_with { |column| column.respond_to?(:attribute) ? column.attribute : column }
-  end
-
-  def button_links
-    []
-  end
-
-  def row_css_id
-    nil
-  end
-
-  def row_css_class
-    nil
-  end
-
-  def checkmark(condition)
-    if condition
-      helpers.op_icon "icon icon-checkmark"
-    end
+  def self.all_available
+    KEYS.map { new(_1) }
   end
 end
