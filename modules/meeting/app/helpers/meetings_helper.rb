@@ -44,68 +44,43 @@ module MeetingsHelper
   end
 
   def menu_upcoming_meetings_item
-    path = project_or_global_meetings_path(
-      filters: [
-        { time: { operator: "=", values: ["future"] } }
-      ],
-      sort: "start_time"
-    )
+    path = project_or_global_meetings_path(MeetingQueries::Static::UPCOMING)
 
     menu_link_element path, t(:label_upcoming_meetings)
   end
 
   def menu_past_meetings_item
-    path = project_or_global_meetings_path(
-      filters: [{ time: { operator: "=", values: ["past"] } }],
-      sort: "start_time:desc"
-    )
+    path = project_or_global_meetings_path(MeetingQueries::Static::PAST)
 
     menu_link_element path, t(:label_past_meetings)
   end
 
   def menu_upcoming_invitations_item
-    path = project_or_global_meetings_path
+    path = project_or_global_meetings_path(MeetingQueries::Static::UPCOMING_INVITATIONS)
 
     menu_link_element path, t(:label_upcoming_invitations)
   end
 
   def menu_past_invitations_item
-    path = project_or_global_meetings_path(
-      filters: [
-        { time: { operator: "=", values: ["past"] } },
-        { invited_user_id: { operator: "=", values: [User.current.id.to_s] } }
-      ],
-      sort: "start_time:desc"
-    )
+    path = project_or_global_meetings_path(MeetingQueries::Static::PAST_INVITATIONS)
 
     menu_link_element path, t(:label_past_invitations)
   end
 
   def menu_attendee_item
-    path = project_or_global_meetings_path(
-      filters: [{ attended_user_id: { operator: "=", values: [User.current.id.to_s] } }]
-    )
+    path = project_or_global_meetings_path(MeetingQueries::Static::ATTENDEE)
 
     menu_link_element path, t(:label_attendee)
   end
 
   def menu_creator_item
-    path = project_or_global_meetings_path(
-      filters: [{ author_id: { operator: "=", values: [User.current.id.to_s] } }]
-    )
+    path = project_or_global_meetings_path(MeetingQueries::Static::CREATOR)
 
     menu_link_element path, t(:label_author)
   end
 
-  def project_or_global_meetings_path(filters: nil, sort: nil)
-    return polymorphic_path([@project, :meetings]) if filters.blank? && sort.blank?
-
-    query_params = {}.tap do |query|
-      query[:filters] = filters.to_json if filters.present?
-      query[:sort] = sort if sort.present?
-    end
-
-    polymorphic_path([@project, :meetings], query_params)
+  def project_or_global_meetings_path(query_id)
+    polymorphic_path([@project, :meetings], query_id:)
   end
 
   def menu_link_element(path, label)

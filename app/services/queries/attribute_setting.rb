@@ -26,24 +26,66 @@
 # See COPYRIGHT and LICENSE files for more details.
 # ++
 
-class ProjectQueries::SetAttributesService < BaseServices::SetAttributes
-  include Queries::AttributeSetting
-
+module Queries::AttributeSetting
   private
 
+  def set_attributes(params)
+    set_filters(params.delete(:filters))
+    set_order(params.delete(:orders))
+    set_select(params.delete(:selects))
+
+    if model.is_a?(ApplicationRecord)
+      super
+    else
+      set_default_attributes(params)
+    end
+  end
+
+  def set_default_attributes(_params)
+    set_default_user if model.is_a?(ApplicationRecord)
+    set_default_filter if model.filters.empty?
+    set_default_order if model.orders.empty?
+    set_default_selects if model.selects.empty?
+  end
+
+  def set_default_user
+    model.change_by_system do
+      model.user = user
+    end
+  end
+
   def set_default_order
-    model.order(lft: :asc)
+    # Nothing or now but overwritable by including class
   end
 
   def set_default_filter
-    model.where("active", "=", OpenProject::Database::DB_VALUE_TRUE)
+    # Nothing or now but overwritable by including class
   end
 
   def set_default_selects
-    model.select(*default_columns, add_not_existing: false)
+    # Nothing or now but overwritable by including class
   end
 
-  def default_columns
-    (%w[favored name] + Setting.enabled_projects_columns).uniq
+  def set_filters(filters)
+    return unless filters
+
+    model.filters.clear
+    filters.each do |filter|
+      model.where(filter[:attribute], filter[:operator], filter[:values])
+    end
+  end
+
+  def set_order(orders)
+    return unless orders
+
+    model.orders.clear
+    model.order(orders.to_h { |o| [o[:attribute], o[:direction]] })
+  end
+
+  def set_select(selects)
+    return unless selects
+
+    model.selects.clear
+    model.select(*selects)
   end
 end
