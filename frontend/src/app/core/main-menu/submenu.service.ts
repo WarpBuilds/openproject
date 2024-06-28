@@ -31,6 +31,10 @@ export class SubmenuService {
           }
         }
 
+        if (selectedQueryId) {
+          frameUrl.search = `?query_id=${selectedQueryId}`;
+        }
+
         // Override the frame src to enforce a reload
         menu.setAttribute('src', frameUrl.href);
       }
