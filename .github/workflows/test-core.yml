@@ -23,7 +23,6 @@ permissions:
 jobs:
   all:
     name: Units + Features
-    if: github.repository == 'opf/openproject'
     runs-on: warp-ubuntu-latest-x64-32x
     timeout-minutes: 40
     env:
