@@ -25,6 +25,9 @@ jobs:
     name: Units + Features
     runs-on: warp-ubuntu-latest-x64-32x
     timeout-minutes: 40
+    strategy:
+      matrix:
+        jobs: [1,2,3,4,5,6]
     env:
       DOCKER_BUILDKIT: 1
       CI_RETRY_COUNT: 3
